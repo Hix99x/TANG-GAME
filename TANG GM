@@ -1,0 +1,190 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+enum Terrain {
+    DESERT, MOUNTAIN, TROPICAL, TRADE, WATER, PLAINS, HILLS, FOREST, FORT
+}
+
+class TangDynastyGame {
+    private String screen = "home";
+    private String mode = null;
+    private String team = null;
+    private String currentTurn = "red";
+    private int gdp = 1000;
+    private int techPoints = 0;
+    private int happiness = 100;
+    private ArrayList<String> territory = new ArrayList<>();
+    private boolean gameOver = false;
+    private ArrayList<String> log = new ArrayList<>();
+    private String conquering = null;
+
+    public static void main(String[] args) {
+        TangDynastyGame game = new TangDynastyGame();
+        game.startGameLoop();
+    }
+
+    public TangDynastyGame() {
+        log.add("Welcome to the Tang Dynasty Strategy Game!");
+    }
+
+    public void startGameLoop() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (!gameOver) {
+            if (screen.equals("home")) {
+                showHomeScreen(scanner);
+            } else if (screen.equals("game")) {
+                showGameScreen(scanner);
+                checkGameOver(); // Check for game over condition
+            }
+        }
+
+        scanner.close();
+    }
+
+    private void showHomeScreen(Scanner scanner) {
+        System.out.println("Tang Dynasty Strategy Game");
+        System.out.println("1. Player vs Bot");
+        System.out.println("2. Player vs Player");
+        System.out.print("Choose a mode (1/2): ");
+        int choice = scanner.nextInt();
+
+        if (choice == 1) {
+            startGame("bot");
+        } else if (choice == 2) {
+            startGame("pvp");
+        }
+    }
+
+    private void startGame(String selectedMode) {
+        mode = selectedMode;
+        screen = "game";
+        System.out.println("Game Mode: " + (mode.equals("pvp") ? "Player vs Player" : "Player vs Bot"));
+    }
+
+    private void showGameScreen(Scanner scanner) {
+        System.out.println("The game has started! Select your actions.");
+        System.out.println("1. View Territory");
+        System.out.println("2. Take Action");
+        System.out.println("3. Exit Game");
+
+        int choice = scanner.nextInt();
+
+        switch (choice) {
+            case 1:
+                viewTerritory();
+                break;
+            case 2:
+                takeAction(scanner);
+                break;
+            case 3:
+                gameOver = true;
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
+    }
+
+    private void viewTerritory() {
+        System.out.println("Current Territory: " + territory);
+    }
+
+    private void takeAction(Scanner scanner) {
+        System.out.println("Choose an action:");
+        System.out.println("1. Move Units");
+        System.out.println("2. Research Technology");
+        System.out.println("3. Manage Resources");
+
+        int actionChoice = scanner.nextInt();
+
+        switch (actionChoice) {
+            case 1:
+                moveUnits(scanner);
+                break;
+            case 2:
+                researchTechnology();
+                break;
+            case 3:
+                manageResources();
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
+    }
+
+    private void moveUnits(Scanner scanner) {
+        System.out.println("Enter the unit's current position:");
+        String currentPosition = scanner.next();
+        System.out.println("Enter the destination position:");
+        String destination = scanner.next();
+
+        // Check if the move is valid based on terrain and adjacent borders
+        if (isValidMove(currentPosition, destination)) {
+            // Move unit logic here (can be expanded later)
+            System.out.println("Unit moved from " + currentPosition + " to " + destination);
+        } else {
+            System.out.println("Invalid move. Try again.");
+        }
+    }
+
+    private boolean isValidMove(String current, String destination) {
+        // Here we can add logic for checking adjacent territories, movement restrictions, etc.
+        return true;
+    }
+
+    private void researchTechnology() {
+        techPoints++;
+        System.out.println("Tech Points: " + techPoints);
+    }
+
+    private void manageResources() {
+        System.out.println("Current GDP: " + gdp);
+        System.out.println("Current Happiness: " + happiness);
+        System.out.println("1. Spend Resources");
+        System.out.println("2. End Turn");
+        int choice = new Scanner(System.in).nextInt();
+        
+        if (choice == 1) {
+            System.out.println("Enter amount to spend on resources:");
+            int amount = new Scanner(System.in).nextInt();
+            if (amount <= gdp) {
+                gdp -= amount;
+                System.out.println("Spent " + amount + " GDP.");
+            } else {
+                System.out.println("Not enough GDP to spend.");
+            }
+        } else if (choice == 2) {
+            // End the turn, proceed to next action
+        }
+    }
+
+    private void checkGameOver() {
+        // Check GDP or happiness conditions for Game Over
+        if (gdp <= 0 || happiness <= 0) {
+            System.out.println("Game Over! Your empire has fallen.");
+            gameOver = true;
+        }
+        // Add other win/loss conditions as needed
+    }
+}
+
+class Territory {
+    String name;
+    Terrain terrain;
+    int gdpValue;
+    int happinessBonus;
+
+    public Territory(String name, Terrain terrain, int gdpValue, int happinessBonus) {
+        this.name = name;
+        this.terrain = terrain;
+        this.gdpValue = gdpValue;
+        this.happinessBonus = happinessBonus;
+    }
+
+    // Method to add resources or handle territory bonuses
+    public void addResources() {
+        gdp += gdpValue;
+        happiness += happinessBonus;
+        System.out.println("Territory " + name + " added: GDP + " + gdpValue + ", Happiness + " + happinessBonus);
+    }
+}
